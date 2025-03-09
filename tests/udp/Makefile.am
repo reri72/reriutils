@@ -6,3 +6,4 @@ udpclient_SOURCES = udpclient.c
 udpserver_SOURCES = udpserver.c
 
 LDADD = $(top_builddir)/libreriutils.a
+LIBS = 

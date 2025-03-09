@@ -8,3 +8,4 @@ sslserver_SOURCES = sslserver.c
 LDADD = $(top_builddir)/libreriutils.a
 
 LDFLAGS = -lssl -lcrypto
+LIBS = 

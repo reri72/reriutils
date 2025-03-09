@@ -1,2 +1,7 @@
-This project uses openssl (https://github.com/openssl/openssl), which is licensed under the Apache License 2.0.
+This project uses OpenSSL, which is installed via the dnf package manager and is licensed under the Apache License 2.0.
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+---------------------------------------------------------------------------------------------------------------
+
+This project is licensed under the [GPLv2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+The MySQL Client Library, installed via dnf, used in this project is also licensed under the GPLv2.

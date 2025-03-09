@@ -13,6 +13,29 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_PROG_CC
 AC_PROG_RANLIB
 
+# Mysql settings
+AC_ARG_WITH([mysql-dir],
+  AS_HELP_STRING([--with-mysql-dir=DIR], [Specify MySQL installation directory]),
+  [mysql_dir=$withval],
+  [mysql_dir=/usr])
+
+CPPFLAGS="$CPPFLAGS -I$mysql_dir/include"
+LDFLAGS="$LDFLAGS -L$mysql_dir/lib64/mysql"
+
+AC_CHECK_HEADER([mysql/mysql.h], [
+  AC_CHECK_LIB([mysqlclient], [mysql_get_client_version], [
+    AC_DEFINE([_USE_MYSQL_], [1], [Define if MySQL is available])
+    AC_MSG_NOTICE([Found MySQL: adding MySQL flags])
+    
+    LIBS="$LIBS -lmysqlclient"
+  ], [
+    AC_MSG_ERROR([MySQL library not found])
+  ])
+], [
+  AC_MSG_ERROR([MySQL header file not found in $mysql_dir/include/mysql])
+])
+
+
 # Checks for libraries.
 
 # Checks for header files.
@@ -53,5 +76,6 @@ AC_CONFIG_FILES([
                     tests/tcp/Makefile
                     tests/udp/Makefile
                     tests/ssl/Makefile
+                    tests/db/Makefile
                 ])
 AC_OUTPUT

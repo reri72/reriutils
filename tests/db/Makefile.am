@@ -1,9 +1,8 @@
-bin_PROGRAMS = getifinfo
+bin_PROGRAMS = mysql_test
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-getifinfo_SOURCES = getifinfo.c
+mysql_test_SOURCES = mysql_db.c
 
 LDADD = $(top_builddir)/libreriutils.a
-
-LIBS = 
+LIBS = -lmysqlclient

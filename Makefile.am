@@ -12,7 +12,8 @@ libreriutils_a_SOURCES = \
                     utiles.c \
                     readconf.c \
                     writelog.c \
-                    sslUtils.c
+                    sslUtils.c \
+                    myutils.c
 
 AM_CPPFLAGS = -I./include -I.
 
@@ -23,7 +24,8 @@ libreriutils_HEADERS = \
                     include/sockUtils.h \
                     include/utiles.h \
                     include/readconf.h \
-                    include/writelog.h
+                    include/writelog.h \
+                    myutils.h
 
 noinst_libreriutils_ladir = $(topdir)
 
