@@ -36,3 +36,11 @@ int check_rootuser()
     }
     return -1;
 }
+
+// success : 0 , failed : -1
+int check_exist_file(const char *fullpath)
+{
+	int res = access(fullpath, 0);
+    
+	return res;
+}

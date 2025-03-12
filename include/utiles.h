@@ -7,6 +7,7 @@ extern "C" {
 
 void nano_sleep(int sec, int nsec);
 int check_rootuser();
+int check_exist_file(const char *fullpath);
 
 #ifdef __cplusplus
 }
