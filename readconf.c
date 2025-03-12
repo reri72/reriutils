@@ -151,7 +151,13 @@ void get_execute_path(char* path, size_t size)
     ssize_t len = readlink("/proc/self/exe", path, size - 1);
     if (len != -1)
     {
-        path[len] = '\0';
-        strcpy(path, dirname(path));
+        char * temp_path = NULL;
+        temp_path = (char *)malloc(len);
+        if (temp_path != NULL)
+        {
+            strcpy(temp_path, dirname(path));
+            strcpy(path, temp_path);
+            free(temp_path); temp_path = NULL;
+        }
     }
 }
