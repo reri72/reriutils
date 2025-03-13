@@ -92,7 +92,7 @@ EXIT_MAIN:
 
     cleanup_ssl(&ssl, &ctx);
 
-    if (client_fd)
+    if (client_fd >= 0)
         close_sock(&client_fd);
 #endif
     return 0;
