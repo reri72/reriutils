@@ -11,10 +11,16 @@ void init_ssl()
 void cleanup_ssl(SSL **ssl, SSL_CTX **ctx)
 {
     if (*ssl != NULL)
+    {
         SSL_free(*ssl);
+        *ssl = NULL;
+    }
 
     if (*ctx != NULL)
+    {
         SSL_CTX_free(*ctx);
+        *ctx = NULL;
+    }
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
     EVP_cleanup();  //암호화 알고리즘 관련 리소리 정리
 #endif
