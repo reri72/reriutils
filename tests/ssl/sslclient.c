@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/select.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 
 #include "sockC.h"
-#include "sslUtils.h"
-#include "socks.h"
 
 #define PORT        5252
 #define SERVER_IP   "10.0.2.5"
@@ -19,6 +19,7 @@ int main(int argc, char **argv)
 
     int client_fd = -1;
     struct sockaddr_in server_addr;
+    struct timeval timeout;
 
     init_ssl();
 
@@ -30,62 +31,74 @@ int main(int argc, char **argv)
     if (ssl == NULL)
         goto EXIT_MAIN;
 
-    client_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (client_fd < 0)
+    client_fd = create_sock(AF_INET, SOCK_STREAM, 0);
+    if (client_fd == FAILED)
     {
         perror("socket");
         goto EXIT_MAIN;
     }
 
     int ret = tcp_client_process(client_fd, PORT, SERVER_IP);
-    if (ret == 0)
+    if (ret != SUCCESS)
     {
-        if (SSL_set_fd(ssl, client_fd) == 0)
+        fprintf(stderr, "tcp_client_process");
+        goto EXIT_MAIN;
+    }
+
+    if (SSL_set_fd(ssl, client_fd) == 0)
+    {
+        fprintf(stderr, "SSL_set_fd failed\n");
+        goto EXIT_MAIN;
+    }
+
+    if (SSL_connect(ssl) <= 0)
+    {
+        ERR_print_errors_fp(stderr);
+        goto EXIT_MAIN;
+    }
+
+    if (sock_set_nonblocking(client_fd) != SUCCESS)
+    {
+        fprintf(stderr, "sock_set_nonblocking");
+        goto EXIT_MAIN;
+    }
+
+    while (1)
+    {
+        fd_set readfds;
+        char buffer[1024] = {0,};
+        
+        FD_ZERO(&readfds);
+        FD_SET(0, &readfds);
+        FD_SET(client_fd, &readfds);
+
+        timeout.tv_sec = 2;
+        timeout.tv_usec = 0;
+
+        int activity = select(client_fd + 1, &readfds, NULL, NULL, &timeout);
+        if (activity < 0)
         {
-            fprintf(stderr, "SSL_set_fd failed\n");
-            goto EXIT_MAIN;
+            perror("select error");
+            break;
+        }
+        else if (activity == 0)
+        {
+            printf("timeout \n");
+            continue;
         }
 
-        if (SSL_connect(ssl) <= 0)
+        if (FD_ISSET(client_fd, &readfds))
         {
-            ERR_print_errors_fp(stderr);
-            goto EXIT_MAIN;
+            int bytes_read = read_ssl(ssl, buffer, sizeof(buffer) - 1);
+            if (bytes_read < 1)
+            {
+                printf("error! bytes_read : %d \n", bytes_read);
+                goto EXIT_MAIN;
+            }
+            printf("read success: %s (%d)\n", buffer, bytes_read);
         }
 
-        int err = SSL_ERROR_ZERO_RETURN;
-        char sendmsg[256] = "Hello, SSL Server!";
-        int writes = SSL_write(ssl, sendmsg, strlen(sendmsg));
-        if (writes > 0)
-        {
-            printf("Client write : %s(%d)\n", sendmsg, writes);
-        }
-        else
-        {
-            err = SSL_get_error(ssl, writes);
-            check_ssl_err(err);
-
-            if (err == SSL_ERROR_ZERO_RETURN)
-                SSL_shutdown(ssl);
-
-            goto EXIT_MAIN;
-        }
-
-        char readmsg[256] = {0};
-        int reads = SSL_read(ssl, readmsg, sizeof(readmsg));
-        if (reads > 0)
-        {
-            printf("Server: %s(%d)\n", readmsg, reads);
-        }
-        else
-        {
-            err = SSL_get_error(ssl, reads);
-            check_ssl_err(err);
-
-            if (err == SSL_ERROR_ZERO_RETURN)
-                SSL_shutdown(ssl);
-
-            goto EXIT_MAIN;
-        }
+        break;
     }
 
 EXIT_MAIN:

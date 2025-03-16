@@ -2,15 +2,16 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <sys/select.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 
 #include "sockC.h"
-#include "socks.h"
-#include "sslUtils.h"
 
 #define PORT        5252
 #define CERT_FILE   "cert.crt"
 #define KEY_FILE    "cert.key"
+
 #define SERVER_IP   "10.0.2.5"
 
 int main(int argc, char **argv)
@@ -32,77 +33,80 @@ int main(int argc, char **argv)
         goto MAIN_EXIT;
 
     server_fd = create_sock(AF_INET, SOCK_STREAM, 0);
-    if (server_fd < 0)
+    if (server_fd == FAILED)
     {
         perror("socket");
         goto MAIN_EXIT;
     }
 
+    if (sock_set_nonblocking(server_fd) != SUCCESS)
+        goto MAIN_EXIT;
+
     int ret = tcp_server_process(server_fd, PORT, SERVER_IP);
-    if (ret == 0)
+    if (ret != SUCCESS)
+        goto MAIN_EXIT;
+
+    while (1)
     {
+        fd_set readfds;
+        struct timeval timeout;
+        char buffer[1024] = {0,};
+
+        FD_ZERO(&readfds);
+        FD_SET(server_fd, &readfds);
+
+        timeout.tv_sec = 2;
+        timeout.tv_usec = 0;
+
+        int activity = select(server_fd + 1, &readfds, NULL, NULL, &timeout);
+        if (activity < 0)
+        {
+            perror("select error");
+            break;
+        }
+        else if (activity == 0)
+        {
+            printf("timeout \n");
+            continue;
+        }
+
         printf("Waiting for a client on %s:%d...\n", SERVER_IP, PORT);
-        client_fd = accept(server_fd, (struct sockaddr*)&addr, &addr_len);
-        if (client_fd < 0)
+        if (FD_ISSET(server_fd, &readfds))
         {
-            perror("accept");
-            goto MAIN_EXIT;
-        }
-
-        ssl = SSL_new(ctx);
-        if (ssl == NULL)
-            goto MAIN_EXIT;
-
-        if (SSL_set_fd(ssl, client_fd) == 0)
-        {
-            fprintf(stderr, "SSL_set_fd failed\n");
-            goto MAIN_EXIT;
-        }
-
-        int err = SSL_ERROR_ZERO_RETURN;
-        if (SSL_accept(ssl) <= 0)
-        {
-            int ssl_err = SSL_get_error(ssl, -1);
-            check_ssl_err(ssl_err);
-            ERR_print_errors_fp(stderr);
-        }
-        else
-        {
-            printf("client accept! \n");
-
-            char buffer[1024] = {0};
-            int reads = SSL_read(ssl, buffer, sizeof(buffer));
-            if (reads > 0)
+            client_fd = accept(server_fd, (struct sockaddr*)&addr, &addr_len);
+            if (client_fd < 0)
             {
-                buffer[reads] = '\0';
-                printf("server read : %s(%d) \n", buffer, reads);
-            }
-            else
-            {
-                err = SSL_get_error(ssl, reads);
-                check_ssl_err(err);
-
-                if (err == SSL_ERROR_ZERO_RETURN)
-                    SSL_shutdown(ssl);
-
+                perror("accept");
                 goto MAIN_EXIT;
             }
 
-            char reply[256] = "Hello, SSL Client!";
-            int writes = SSL_write(ssl, reply, strlen(reply));
-            if (writes > 0)
-            {
-                printf("server write : %s(%d)\n", reply, writes);
-            }
-            else
-            {
-                err = SSL_get_error(ssl, writes);
-                check_ssl_err(err);
+            ssl = SSL_new(ctx);
+            if (ssl == NULL)
+                goto MAIN_EXIT;
 
-                if (err == SSL_ERROR_ZERO_RETURN)
-                    SSL_shutdown(ssl);
+            if (SSL_set_fd(ssl, client_fd) == 0)
+            {
+                fprintf(stderr, "SSL_set_fd failed\n");
                 goto MAIN_EXIT;
             }
+
+            int err = SSL_ERROR_ZERO_RETURN;
+            if (SSL_accept(ssl) <= 0)
+            {
+                int ssl_err = SSL_get_error(ssl, -1);
+                check_ssl_err(ssl_err);
+                ERR_print_errors_fp(stderr);
+            }
+            
+            int bytes_write = write_ssl(ssl, "hello client ?", strlen("hello client?"));
+            if (bytes_write < 1)
+            {
+                printf("error ! bytes_write : %d \n", bytes_write);
+                goto MAIN_EXIT;
+            }
+            printf("send success \"hello client ?\" (%d)\n", bytes_write);
+
+            break;
         }
     }
 

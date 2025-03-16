@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "writelog.h"
+
+#include "sockC.h"
 
 int main(int argc, char const *argv[])
 {

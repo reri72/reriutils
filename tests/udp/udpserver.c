@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "socks.h"
+#include "sockC.h"
 
 int main(int argc, char **argv)
 {

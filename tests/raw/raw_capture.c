@@ -21,9 +21,6 @@
 #include <netinet/tcp.h>
 
 #include "sockC.h"
-#include "utiles.h"
-#include "socks.h"
-#include "sockUtils.h"
 
 bool stop = false;
 

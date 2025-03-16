@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-#include "socks.h"
+#include "sockC.h"
 
 int main(int argc, char **argv)
 {

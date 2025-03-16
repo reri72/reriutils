@@ -13,8 +13,6 @@
 #include <sys/types.h>
 
 #include "sockC.h"
-#include "socks.h"
-#include "sockUtils.h"
 
 void sig_handle();
 void *recvping(void *argv);

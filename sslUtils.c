@@ -91,4 +91,47 @@ int configure_ctx(SSL_CTX *ctx, const char *certpath, const char *keypath)
     return 0;
 }
 
+int read_ssl(SSL *ssl, char *buffer, int buffer_size)
+{
+    int bytes = SSL_read(ssl, buffer, buffer_size);
+    if (bytes <= 0)
+    {
+        int error = SSL_get_error(ssl, bytes);
+        
+        if (error == SSL_ERROR_WANT_READ || error == SSL_ERROR_WANT_WRITE)
+        {
+            // non-blocking mode
+            return 0;
+        }
+        else
+        {
+            perror("SSL_read() failed");
+            return -1;
+        }
+    }
+
+    buffer[bytes] = '\0';
+    return bytes;
+}
+
+int write_ssl(SSL *ssl, const char *buffer, int buffer_size)
+{
+    int bytes = SSL_write(ssl, buffer, buffer_size);
+    if (bytes <= 0)
+    {
+        int error = SSL_get_error(ssl, bytes);
+        if (error == SSL_ERROR_WANT_READ || error == SSL_ERROR_WANT_WRITE)
+        {
+            // non-blocking mode
+            return 0;
+        }
+        else
+        {
+            perror("SSL_write() failed");
+            return -1;
+        }
+    }
+    return bytes;
+}
+
 #endif

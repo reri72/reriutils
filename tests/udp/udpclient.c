@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "socks.h"
+#include "sockC.h"
 
 uint16_t port = 1234;
 char ip[25] = "10.0.2.6";
