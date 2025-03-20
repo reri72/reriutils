@@ -2,10 +2,14 @@
 
 #if HAVE_OPENSSL
 
-void init_ssl()
+int init_ssl()
 {
-    SSL_load_error_strings();
-    OpenSSL_add_ssl_algorithms();
+    if (OPENSSL_init_ssl(0, NULL) == 0)
+    {
+        fprintf(stderr, "failed to initialize SSL \n");
+        return 1;
+    }
+    return 0;
 }
 
 void cleanup_ssl(SSL **ssl, SSL_CTX **ctx)

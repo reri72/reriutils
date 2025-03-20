@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 #if HAVE_OPENSSL
-void init_ssl();
+int init_ssl();
 void cleanup_ssl(SSL **ssl, SSL_CTX **ctx);
 
 void check_ssl_err(int err);
