@@ -9,6 +9,7 @@ void sha256_test()
 {
     unsigned char input[16] = "hi world";
     unsigned char hash[EVP_MAX_MD_SIZE] = {0,};
+    char *base64_hash = NULL;
 
     int len = strlen(input);
     
@@ -25,6 +26,14 @@ void sha256_test()
             printf("%02x", hash[i]);
         }
         printf("\n");
+
+        base64_hash = BASE64_encode(hash, (EVP_MAX_MD_SIZE/2));
+        if (base64_hash != NULL)
+        {
+            printf("BASE64 encoding : %s \n", base64_hash);
+            free(base64_hash);
+        }
+        
     }
     printf("===========================================\n\n");
 }

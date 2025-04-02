@@ -226,4 +226,35 @@ void AES256CBC_decrypt(const unsigned char *cipher, int cipherlen, unsigned char
     EVP_CIPHER_CTX_free(ctx);
 }
 
+char *BASE64_encode(const unsigned char *input, int len)
+{
+    BIO *bmem   = NULL;
+    BIO *b64    = NULL;
+
+    BUF_MEM *bptr = NULL;
+
+    char *buffer = NULL;
+
+    b64 = BIO_new(BIO_f_base64());
+    bmem = BIO_new(BIO_s_mem());
+    b64 = BIO_push(b64, bmem);
+
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+
+    BIO_write(b64, input, len);
+    BIO_flush(b64);
+    BIO_get_mem_ptr(b64, &bptr);
+
+    buffer = (char *)malloc(bptr->length + 1);
+    if (buffer != NULL)
+    {
+        memcpy(buffer, bptr->data, bptr->length);
+        buffer[bptr->length] = 0;
+    }
+
+    BIO_free_all(b64);
+
+    return buffer;
+}
+
 #endif

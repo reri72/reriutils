@@ -7,6 +7,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+#include <openssl/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +33,8 @@ void SHA256_encrypt(const unsigned char *input, int len, unsigned char *out);
 
 void AES256CBC_encrypt(const unsigned char *plain, int plainlen, unsigned char *key, unsigned char *iv, unsigned char *cipher, int *cipherlen);
 void AES256CBC_decrypt(const unsigned char *cipher, int cipherlen, unsigned char *key, unsigned char *iv, unsigned char *plain, int *plainlen);
+
+char *BASE64_encode(const unsigned char *input, int len);
 
 #endif
 
