@@ -138,4 +138,92 @@ int write_ssl(SSL *ssl, const char *buffer, int buffer_size)
     return bytes;
 }
 
+void SHA256_encrypt(const unsigned char *input, int len, unsigned char *out)
+{
+    EVP_MD_CTX *mdctx = NULL;
+    const EVP_MD *md = NULL;
+
+    unsigned int outlen = 0;
+
+    md = EVP_sha256();
+    mdctx = EVP_MD_CTX_new();
+    
+    EVP_DigestInit_ex(mdctx, md, NULL);
+    EVP_DigestUpdate(mdctx, input, len);
+    EVP_DigestFinal_ex(mdctx, out, &outlen);
+    EVP_MD_CTX_free(mdctx);
+}
+
+void AES256CBC_encrypt(const unsigned char *plain, int plainlen, unsigned char *key, unsigned char *iv, unsigned char *cipher, int *cipherlen)
+{
+    EVP_CIPHER_CTX *ctx = NULL;
+    int len = 0;
+
+    if ( !(ctx = EVP_CIPHER_CTX_new()) )
+    {
+        perror("EVP_CIPHER_CTX_new failed");
+        exit(1);
+    }
+
+    if ( EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1 )
+    {
+        perror("EVP_EncryptInit_ex failed");
+        exit(1);
+    }
+
+    if ( EVP_EncryptUpdate(ctx, cipher, &len, plain, plainlen) != 1 )
+    {
+        perror("EVP_EncryptUpdate failed");
+        exit(1);
+    }
+
+    *cipherlen = len;
+
+    if ( EVP_EncryptFinal_ex(ctx, cipher + len, &len) != 1 )
+    {
+        perror("EVP_EncryptFinal_ex failed");
+        exit(1);
+    }
+
+    *cipherlen += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+}
+
+void AES256CBC_decrypt(const unsigned char *cipher, int cipherlen, unsigned char *key, unsigned char *iv, unsigned char *plain, int *plainlen)
+{
+    EVP_CIPHER_CTX *ctx = NULL;
+    int len = 0;
+
+    if ( !(ctx = EVP_CIPHER_CTX_new()) )
+    {
+        perror("EVP_CIPHER_CTX_new failed");
+        exit(1);
+    }
+
+    if ( EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1 )
+    {
+        perror("EVP_DecryptInit_ex failed");
+        exit(1);
+    }
+
+    if ( EVP_DecryptUpdate(ctx, plain, &len, cipher, cipherlen) != 1 )
+    {
+        perror("EVP_DecryptUpdate failed");
+        exit(1);
+    }
+
+    *plainlen = len;
+
+    if ( EVP_DecryptFinal_ex(ctx, plain + len, &len) != 1 )
+    {
+        perror("EVP_DecryptFinal_ex failed");
+        exit(1);
+    }
+
+    *plainlen += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+}
+
 #endif
