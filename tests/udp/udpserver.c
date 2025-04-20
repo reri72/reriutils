@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 int main(int argc, char **argv)
 {

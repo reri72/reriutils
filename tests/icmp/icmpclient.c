@@ -12,7 +12,7 @@
 
 #include <sys/types.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 void sig_handle();
 void *recvping(void *argv);

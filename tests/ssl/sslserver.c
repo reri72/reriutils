@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 #define PORT        5252
 #define CERT_FILE   "cert.crt"

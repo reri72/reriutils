@@ -15,8 +15,7 @@
 #include <netinet/udp.h>
 #include <netinet/in.h>
 
-#include "sockUtils.h"
-#include "sockC.h"
+#include "reriutils.h"
 
 int sock_set_linger(int sockfd, int sec)
 {

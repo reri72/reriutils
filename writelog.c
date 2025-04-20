@@ -13,8 +13,7 @@
 #include <dirent.h>
 #include <pthread.h>
 
-#include "sockC.h"
-#include "writelog.h"
+#include "reriutils.h"
 
 _logset     loglevel = LOG_ERROR;
 logq_t      logqueue;
@@ -138,11 +137,20 @@ void logwrite(const char *level, const char *filename, const int line, const cha
     strftime(tmstr, sizeof(char) * 128, "%Y-%m-%d %H:%M:%S", &ts);
 
     if (strstr(level, "DUMP") != NULL)
+    {
         snprintf(logbuffer, sizeof(logbuffer), "%-20s [%s] : %s",
             tmstr, level, argbuf);
-    else
-        snprintf(logbuffer, sizeof(logbuffer), "%-20s [%s] %s %d %s : %s",
+    }
+    else if (strstr(level, "DEBUG") != NULL)
+    {
+        snprintf(logbuffer, sizeof(logbuffer), "%-20s [%s] %s/%dL %s : %s",
             tmstr, level, filename, line, funcname, argbuf);
+    }
+    else
+    {
+        snprintf(logbuffer, sizeof(logbuffer), "%-20s [%s] %s : %s",
+            tmstr, level, funcname, argbuf);
+    }
 
     pthread_mutex_lock(&_mutex);
     {

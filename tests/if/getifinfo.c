@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 typedef struct ifinfo
 {

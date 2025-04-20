@@ -6,8 +6,7 @@
 
 #include <linux/if_ether.h>
 
-#include "sockC.h"
-#include "socks.h"
+#include "reriutils.h"
 
 int create_sock(int domain, int type, int protocol)
 {

@@ -19,7 +19,7 @@ AM_CPPFLAGS = -I./include -I.
 
 libreriutilsdir = $(include)
 libreriutils_HEADERS = \
-                    include/sockC.h \
+                    include/reriutils.h \
                     include/socks.h \
                     include/sockUtils.h \
                     include/utiles.h \

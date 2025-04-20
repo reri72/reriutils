@@ -11,10 +11,4 @@
 #include "sslUtils.h"
 #include "myutils.h"
 
-#define BACKLOG     10
-#define FAILED      -1
-#define SUCCESS     0
-#define END         1
-
-#define BUFFER_SIZE 65535
 #endif

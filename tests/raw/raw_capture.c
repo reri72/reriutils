@@ -20,7 +20,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 bool stop = false;
 

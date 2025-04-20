@@ -1,6 +1,13 @@
 #ifndef _SOCKS_H_
 #define _SOCKS_H_
 
+#define BACKLOG     10
+#define FAILED      -1
+#define SUCCESS     0
+#define END         1
+
+#define BUFFER_SIZE 65535
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,7 +1,7 @@
 #ifndef _SSLUTILS_H
 #define _SSLUTILS_H
 
-#include "sockC.h"
+#include "reriutils.h"
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>

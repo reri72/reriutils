@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 int main(int argc, char const *argv[])
 {

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 #if HAVE_OPENSSL
 void sha256_test()

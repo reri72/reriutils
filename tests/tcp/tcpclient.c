@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-#include "sockC.h"
+#include "reriutils.h"
 
 int main(int argc, char **argv)
 {
