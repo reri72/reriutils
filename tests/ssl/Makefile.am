@@ -8,5 +8,5 @@ sslcrypto_SOURCES = sslcrypto.c
 
 LDADD = $(top_builddir)/libreriutils.a
 
-LDFLAGS = -lssl -lcrypto
+AM_LDFLAGS = -lssl -lcrypto
 LIBS = 
