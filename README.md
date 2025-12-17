@@ -30,10 +30,13 @@ You will need the following tools and libraries installed on your system:
 
 After cloning the repository, execute the provided shell script in the root directory. This script generates the necessary Autotools configuration files (`configure`).
 
-```
-./script.sh
-```
+```bash
+# Basic setup
+./build.sh
 
+# Setup with specific features
+./build.sh mysql openssl
+```
 
 ### 3. Setting up the Build Environment
 
