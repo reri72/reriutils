@@ -1,7 +1,7 @@
-bin_PROGRAMS = icmpclient
+bin_PROGRAMS = usage
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -lpthread
 
-icmpclient_SOURCES = icmpclient.c
+usage_SOURCES = usage.c
 
 LDADD = $(top_builddir)/libreriutils.a

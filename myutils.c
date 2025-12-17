@@ -4,6 +4,8 @@
 
 #include "myutils.h"
 
+#ifdef _USE_MYSQL_
+
 void my_print_err_with_exit(MYSQL *conn, const char *where)
 {
     fprintf(stderr, "exit from [%s]\n", where);
@@ -106,3 +108,5 @@ void my_print_res(MYSQL_RES *res)
 		printf("\n");
 	}
 }
+
+#endif

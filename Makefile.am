@@ -13,7 +13,10 @@ libreriutils_a_SOURCES = \
                     readconf.c \
                     writelog.c \
                     sslUtils.c \
-                    myutils.c
+                    myutils.c \
+                    cpucalc.c \
+                    diskcalc.c \
+                    memcalc.c                    
 
 AM_CPPFLAGS = -I./include -I.
 
@@ -25,7 +28,10 @@ libreriutils_HEADERS = \
                     include/utiles.h \
                     include/readconf.h \
                     include/writelog.h \
-                    myutils.h
+                    include/myutils.h \
+                    include/cpucalc.h \
+                    include/diskcalc.h \
+                    include/memcalc.h
 
 noinst_libreriutils_ladir = $(topdir)
 

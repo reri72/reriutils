@@ -2,10 +2,11 @@
 #include <stdbool.h>
 #include "myutils.h"
 
-#ifdef _USE_MYSQL_
+
 
 int main(int argc, char **argv)
 {
+#ifdef _USE_MYSQL_
 	MYSQL *conn = NULL;
 	MYSQL_RES *res = NULL;
 
@@ -26,6 +27,5 @@ int main(int argc, char **argv)
 	mysql_close(conn);
 
 	return 0;
-}
-
 #endif
+}

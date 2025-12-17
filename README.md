@@ -62,7 +62,7 @@ The project's configure.ac script manages critical external dependencies transpa
 
 MySQL: The configuration checks for the presence of the MySQL header (mysql/mysql.h) and the client library (libmysqlclient). It supports defining the installation path using the --with-mysql-dir option.
 
-OpenSSL: SSL/TLS support is enabled by passing the --with-openssl=yes option to ./configure. This automatically links the required libraries (-lssl -lcrypto).
+OpenSSL: SSL/TLS support is enabled by passing the *openssl* option to ./configure. This automatically links the required libraries (-lssl -lcrypto).
 
 📝 Integration Guide
 To integrate libreriutils.a into your own C projects:

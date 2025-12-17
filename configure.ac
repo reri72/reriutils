@@ -13,27 +13,28 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_PROG_CC
 AC_PROG_RANLIB
 
-# Mysql settings
-AC_ARG_WITH([mysql-dir],
-  AS_HELP_STRING([--with-mysql-dir=DIR], [Specify MySQL installation directory]),
-  [mysql_dir=$withval],
-  [mysql_dir=/usr])
+AC_ARG_WITH([mysql],
+  [AS_HELP_STRING([--with-mysql], [Enable MySQL support (yes/no/DIR)])],
+  [with_mysql=$withval],
+  [with_mysql=no])
 
-CPPFLAGS="$CPPFLAGS -I$mysql_dir/include"
-LDFLAGS="$LDFLAGS -L$mysql_dir/lib64/mysql"
+if test "x$with_mysql" != "xno"; then
+    if test "x$with_mysql" = "xyes"; then
+        mysql_dir="/usr"
+    else
+        mysql_dir=$with_mysql
+    fi
 
-AC_CHECK_HEADER([mysql/mysql.h], [
-  AC_CHECK_LIB([mysqlclient], [mysql_get_client_version], [
-    AC_DEFINE([_USE_MYSQL_], [1], [Define if MySQL is available])
-    AC_MSG_NOTICE([Found MySQL: adding MySQL flags])
-    
-    LIBS="$LIBS -lmysqlclient"
-  ], [
-    AC_MSG_ERROR([MySQL library not found])
-  ])
-], [
-  AC_MSG_ERROR([MySQL header file not found in $mysql_dir/include/mysql])
-])
+    CPPFLAGS="$CPPFLAGS -I$mysql_dir/include"
+    LDFLAGS="$LDFLAGS -L$mysql_dir/lib64/mysql -L$mysql_dir/lib64 -L$mysql_dir/lib/mysql -L$mysql_dir/lib"
+
+    AC_CHECK_HEADER([mysql/mysql.h], [
+        AC_CHECK_LIB([mysqlclient], [mysql_get_client_version], [
+            AC_DEFINE([_USE_MYSQL_], [1], [Define if MySQL is available])
+            LIBS="$LIBS -lmysqlclient"
+        ], [AC_MSG_ERROR([MySQL library not found])])
+    ], [AC_MSG_ERROR([MySQL headers not found])])
+fi
 
 
 # Checks for libraries.
@@ -57,8 +58,12 @@ AC_ARG_WITH([openssl],
   [with_openssl=no])
 
 if test "$with_openssl" = "yes"; then
-  LDFLAGS="$LDFLAGS -lssl -lcrypto"
-  AC_DEFINE([HAVE_OPENSSL], [1], [Define if OpenSSL is available])
+    AC_CHECK_LIB([crypto], [main], [], [AC_MSG_ERROR([libcrypto not found])])
+    
+    AC_CHECK_LIB([ssl], [main], [
+        LIBS="$LIBS -lssl -lcrypto"
+        AC_DEFINE([HAVE_OPENSSL], [1], [Define if OpenSSL is available])
+    ], [AC_MSG_ERROR([libssl not found])], [-lcrypto])
 fi
 
 # Checks for library functions.
@@ -77,5 +82,6 @@ AC_CONFIG_FILES([
                     tests/udp/Makefile
                     tests/ssl/Makefile
                     tests/db/Makefile
+                    tests/resource/Makefile
                 ])
 AC_OUTPUT
