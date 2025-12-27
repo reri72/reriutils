@@ -47,16 +47,6 @@ typedef struct statm
     unsigned long dt;
 }__attribute__((packed)) pStatm;
 
-
-/*  variables   */
-extern Meminfo mems;
-extern pMeminfo pmems;
-extern pStatm pstatm;
-
-extern double real_mem;
-extern double pretext_mem;
-extern double pmem;
-
 /*  functions    */
 bool readMemInfo(Meminfo *mems);
 bool readProcMemInfo(pMeminfo *pmems, pid_t pid);

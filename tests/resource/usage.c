@@ -107,17 +107,21 @@ int main(int argc, char *argv[])
 
         if (b_printmemory)
         {
+            Meminfo mems = {0,};
+            pMeminfo pmems = {0,};
+            pStatm pstatm = {0,};
+
             if (!readMemInfo(&mems))
             {
                 printf(" '/proc/meminfo' read failed. \n");
             }
             else
             {
-                real_mem = ((double)mems.mtot - (double)mems.fmree) / (double)mems.mtot * 100.0;
-                pretext_mem = ((double)mems.mtot - (double)mems.mavail) / (double)mems.mtot * 100.0;
+                double real_mem = ((double)mems.mtot - (double)mems.fmree) / (double)mems.mtot * 100.0;
+                double pretext_mem = ((double)mems.mtot - (double)mems.mavail) / (double)mems.mtot * 100.0;
 
-                printf("Linux real memory usage(%%) : %0.1f %% \n", real_mem);
-                printf("Linux pretext memory usage(%%) : %0.1f %% \n", pretext_mem);
+                printf("Linux real memory usage(%%) : %g %% \n", real_mem);
+                printf("Linux pretext memory usage(%%) : %g %% \n", pretext_mem);
             }
 
             if (!ReadProcStatm(&pstatm, pid))
@@ -134,8 +138,8 @@ int main(int argc, char *argv[])
                 // VmRSS를 사용해 프로세스 메모리 사용률 계산
                 if (mems.mtot > 0)
                 {
-                    pmem = ( (double)pmems.VmRSS / (double)mems.mtot ) * 100.0;
-                    printf("Process memory usage(%%) : %0.1f %% \n", pmem);
+                    double pmem = ( (double)pmems.VmRSS / (double)mems.mtot ) * 100.0;
+                    printf("Process memory usage(%%) : %g %% \n", pmem);
                 }
                 else
                 {

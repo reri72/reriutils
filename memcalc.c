@@ -1,14 +1,5 @@
 #include "memcalc.h"
 
-/*  variables   */
-Meminfo mems;
-pMeminfo pmems;
-pStatm pstatm;
-
-double real_mem;
-double pretext_mem;
-double pmem;
-
 bool readMemInfo(Meminfo *mems)
 {
     FILE * fp = fopen( "/proc/meminfo", "r");
@@ -112,7 +103,7 @@ bool ReadProcStatm(pStatm *pstatm, pid_t pid)
         char buf[1024] = {0,};
         fgets(buf, 1024, fp);
 
-        sscanf(buf, "%ld %ld %ld %ld %ld %ld %ld",
+        sscanf(buf, "%lu %lu %lu %lu %lu %lu %lu",
             &pstatm->size, &pstatm->resident, &pstatm->share, &pstatm->text, &pstatm->lib, &pstatm->data, &pstatm->dt);
     
         fclose(fp);
