@@ -88,16 +88,16 @@ int main(int argc, char *argv[])
     printf("memory info : %lu %lu %lu \n", info.totalram, info.totalram-info.freeram, info.freeram );
 #endif
 
+    CpuContext ctx = {0,0,0,0,pid};
     while (run)
     {
         if (b_printcpu)
         {
-            getProcinfo(pid);
-            getSystemStat();
-
-            if (calCpu())
+            if (update_cpu_usage(&ctx))
             {
-                printf("System CPU: %0.1f%% | Process: %.1f%%\n", cpu_usage, pcpu_usage);
+                getProcinfo(&ctx);
+                printf("System CPU: %0.1f%% | Process: %.1f%%\n",
+                            ctx.system_total_usage, ctx.process_usage);
             }
         }
 
@@ -167,11 +167,6 @@ void init_usage()
 {
     signal(SIGINT, sigHandle);
     signal(SIGTERM, sigHandle);
-
-    total_cpu_usage = 0;
-    total_proc_time = 0;
-    pcpu_usage = 0.0;
-    cpu_usage = 0.0;
 }
 
 void init_arg(int count, char *values[])

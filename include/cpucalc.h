@@ -15,15 +15,19 @@ extern "C" {
 #define CLK_TCK sysconf(_SC_CLK_TCK)
 #define CPU_EA sysconf(_SC_NPROCESSORS_ONLN)
 
-extern unsigned long long total_cpu_usage;
-extern unsigned long total_proc_time;
-extern double pcpu_usage;
-extern double cpu_usage;
+typedef struct {
+    double system_total_usage;
+    double process_usage;
+    unsigned long long _prev_total;
+    unsigned long long _prev_idle;
+    unsigned long _proc_t;
+} CpuContext;
+
+bool update_cpu_usage(CpuContext *ctx);
+void getProcinfo(CpuContext *ctx);
 
 void getSystemUptime();
-void getSystemStat();
-void getProcinfo(pid_t pid);
-bool calCpu();
+
 
 #ifdef __cplusplus
 }
