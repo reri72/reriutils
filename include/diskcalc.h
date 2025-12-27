@@ -16,8 +16,6 @@
 #define MB (1024 * 1024)
 #define GB (1024 * 1024 * 1024)
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,17 +28,12 @@ typedef struct mountinfo
     char fstype[20];
     unsigned long blocks;
     unsigned long avail;
+    double usage_percent;
 }  __attribute__((packed)) Mountinfo;
-
-
-/*  variables   */
-extern struct statvfs diskusage;
-extern Mountinfo *minfo;
-
 
 /*  functions    */
 void GetDiskUsage_Loop();
-double Once_MountInfo(char *dir);
+double CalculateDiskUsage(char *dir);
 Mountinfo *MountOpen();
 Mountinfo *ReadMountInfo(Mountinfo *minfo);
 void MountReadClose(Mountinfo *minfo);

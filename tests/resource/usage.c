@@ -31,7 +31,10 @@ pthread_t tid;
 bool run = false;
 
 bool b_printcpu = false;
+CpuContext ctx = {0,};
+
 bool b_printmemory = false;
+
 bool b_printdisk = false;
 
 void sigHandle(int signum)
@@ -88,7 +91,8 @@ int main(int argc, char *argv[])
     printf("memory info : %lu %lu %lu \n", info.totalram, info.totalram-info.freeram, info.freeram );
 #endif
 
-    CpuContext ctx = {0,0,0,0,pid};
+    ctx._proc_t = pid;
+
     while (run)
     {
         if (b_printcpu)
@@ -142,6 +146,7 @@ int main(int argc, char *argv[])
 
         if (b_printdisk)
         {
+            Mountinfo *minfo = NULL;
             if ((minfo = MountOpen()) == NULL)
             {
                 printf(" '/proc/mounts' open failed. \n");
@@ -150,7 +155,9 @@ int main(int argc, char *argv[])
             {
                 while (ReadMountInfo(minfo))
                 {
-                    printf("Linux disk usage(%%) - [%s] : %0.2f %% \n", minfo->mountdir, Once_MountInfo(minfo->mountdir));
+                    double disk_usage = CalculateDiskUsage(minfo->mountdir);
+                    printf("mount: %s [%s], usage: %.2f%%\n", 
+                            minfo->devname, minfo->mountdir, disk_usage);
                 }
                 MountReadClose(minfo);
             }
