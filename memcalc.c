@@ -13,39 +13,27 @@ bool readMemInfo(Meminfo *mems)
 {
     FILE * fp = fopen( "/proc/meminfo", "r");
 
-    int i = 0;
-    unsigned long val[6] = {0, };
-
-    memset(mems, 0x00, sizeof(Meminfo));
-
-    if (fp != NULL)
-    {
-        char temp[1024] = {0,};
-        char *pstr = NULL;
-
-        do
-        {
-            // fgets는 개행('\n')이 있는 곳 까지(줄바꿈 등장까지) 읽음
-            // 구조체에 필요한 6줄만 읽는다.
-            pstr = fgets(temp, sizeof(temp), fp);
-            sscanf(temp, "%*s %lu %*s", &val[i]);
-            i++;
-
-        } while(i < 6);
-
-        fclose(fp);
-    }
-    else
-    {
+    if (!fp)
         return false;
+
+    char line[256] = {0,};
+    while (fgets(line, sizeof(line), fp))
+    {
+        if (strncmp(line, "MemTotal:", 9) == 0)
+            sscanf(line, "%*s %lu", &mems->mtot);
+        else if (strncmp(line, "MemFree:", 8) == 0)
+            sscanf(line, "%*s %lu", &mems->fmree);
+        else if (strncmp(line, "MemAvailable:", 13) == 0)
+            sscanf(line, "%*s %lu", &mems->mavail);
+        else if (strncmp(line, "Buffers:", 8) == 0)
+            sscanf(line, "%*s %lu", &mems->bufs);
+        else if (strncmp(line, "Cached:", 7) == 0)
+            sscanf(line, "%*s %lu", &mems->cached);
+        else if (strncmp(line, "SwapCached:", 11) == 0)
+            sscanf(line, "%*s %lu", &mems->swapcached);
     }
 
-    mems->mtot = val[0];
-    mems->fmree = val[1];
-    mems->mavail = val[2];
-    mems->bufs = val[3];
-    mems->cached = val[4];
-    mems->swapcached = val[5];
+    fclose(fp);
 
     return true;
 }
@@ -54,54 +42,53 @@ bool readProcMemInfo(pMeminfo *pmems, pid_t pid)
 {
     char ppath[100] = {0,};
     int cx = 0;
-
-    memset(pmems, 0x00, sizeof(pMeminfo));
+    FILE *fp = NULL;
 
     cx = snprintf( ppath, sizeof(ppath), "/proc/%d/status", pid);
     if (!cx)
-    {
         return false;
-    }
 
-    FILE * fp = fopen(ppath, "r");
+    fp = fopen(ppath, "r");
+    if (fp == NULL)
+        return false;
+    
+    memset(pmems, 0x00, sizeof(pMeminfo));
 
     int i = 0;
     unsigned long val[4] = {0, };    
 
-    if (fp != NULL)
-	{
-        char* list[4] = {"VmPeak:", "VmSize:", "VmData:", "VmRSS:"};
-		char temp[1024] = {0,};
-        char item[64] = {0,};
-		char *pstr = NULL;
-        int k;
+    char* list[4] = {"VmPeak:", "VmSize:", "VmData:", "VmRSS:"};
+    char temp[1024] = {0,};
+    unsigned long int val_temp = 0;
+    char item[64] = {0,};
+    char *pstr = NULL;
+    int k;
 
-		do
-		{
-			pstr = fgets(temp, sizeof(temp), fp);
-            sscanf(temp, "%63s %lu", item, &val[i]);
+    while (fgets(temp, sizeof(temp), fp) && i < 4)
+    {
+        if (sscanf(temp, "%63s %lu", item, &val_temp) == 2)
+        {
             for (k = 0; k < 4; k++)
             {
                 if (strcasecmp(item, list[k]) == 0)
                 {
+                    if (k == 0)
+                        pmems->VmPeak = val_temp;
+                    else if (k == 1)
+                        pmems->VmSize = val_temp;
+                    else if (k == 2)
+                        pmems->VmData = val_temp;
+                    else if (k == 3)
+                        pmems->VmRSS = val_temp;
+
                     i++;
                     break;
                 }
             }
-            
-		}while(i < 4);
+        }
+    }
 
-		fclose(fp);
-	}
-	else
-	{
-        return false;
-	}
-
-    pmems->VmPeak = val[0];
-    pmems->VmSize = val[1];
-    pmems->VmData = val[2];
-    pmems->VmRSS = val[3];
+    fclose(fp);
 
     return true;
 }

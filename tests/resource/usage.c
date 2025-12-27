@@ -95,18 +95,10 @@ int main(int argc, char *argv[])
             getProcinfo(pid);
             getSystemStat();
 
-            n_sleep(1, 0);  // 잠시 대기
-
-            getProcinfo(pid);
-            getSystemStat();
-            
-            printf("Linux System CPU usage(%%) : %0.1f %% \n", cpu_usage);
-
-            if (!calCpu())
+            if (calCpu())
             {
-                raise(SIGINT);
+                printf("System CPU: %0.1f%% | Process: %.1f%%\n", cpu_usage, pcpu_usage);
             }
-            printf("Process cpu usage(%%) : %.1f %%\n", pcpu_usage);
         }
 
         if (b_printmemory)

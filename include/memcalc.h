@@ -8,8 +8,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-/*	https://github.com/reri72	*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*  definition  */
 #define PAGESIZE getpagesize()
@@ -56,10 +57,13 @@ extern double real_mem;
 extern double pretext_mem;
 extern double pmem;
 
-
 /*  functions    */
 bool readMemInfo(Meminfo *mems);
 bool readProcMemInfo(pMeminfo *pmems, pid_t pid);
 bool ReadProcStatm(pStatm *pstatm, pid_t pid);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //_MEMCALC_H_

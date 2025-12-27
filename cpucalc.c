@@ -26,6 +26,7 @@ void getSystemStat()
                     &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
 
             // 보통 guest, guest_nice는 제외해도 됨 (가상화 환경이 아니면 0)
+            // 리눅스 커널에서 user와 nice 값에는 이미 guest와 guest_nice 시간이 포함되어 있음
             unsigned long long cur_idle = idle + iowait;
             unsigned long long cur_total = user + nice + system + idle + iowait + irq + softirq + steal;
 

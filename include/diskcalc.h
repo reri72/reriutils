@@ -11,13 +11,16 @@
 #include <sys/types.h>
 #include <sys/statvfs.h>
 
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-/*	https://github.com/reri72	*/
-
 /*  definition  */
 #define KB 1024
 #define MB (1024 * 1024)
 #define GB (1024 * 1024 * 1024)
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct mountinfo 
 {
@@ -41,5 +44,9 @@ double Once_MountInfo(char *dir);
 Mountinfo *MountOpen();
 Mountinfo *ReadMountInfo(Mountinfo *minfo);
 void MountReadClose(Mountinfo *minfo);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // _DISKCALC_H_

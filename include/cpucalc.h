@@ -1,6 +1,10 @@
 #ifndef _CPUCALC_H_
 #define _CPUCALC_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,5 +24,9 @@ void getSystemUptime();
 void getSystemStat();
 void getProcinfo(pid_t pid);
 bool calCpu();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // _CPUCALC_H_

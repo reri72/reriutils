@@ -63,8 +63,13 @@ Mountinfo *ReadMountInfo(Mountinfo *minfo)
         if (stat(minfo->devname, &lstat) == 0 || rootdir)
         {
             // block device(storage device) 확인한다.
-            if (( S_ISBLK(lstat.st_mode) && strstr(buf, minfo->mountdir) ) || rootdir)
+            if (S_ISBLK(lstat.st_mode) || rootdir)
             {
+                if (minfo->fstype[0] == 'n' && minfo->fstype[1] == 'f')
+                    continue; // nfs(네트워크파일시스템) 제외
+                if (strcmp(minfo->fstype, "tmpfs") == 0)
+                    continue; // tmpfs(임시파일시스템) 제외
+                    
                 statfs(minfo->mountdir, &lstatfs);
 
                 minfo->blocks = lstatfs.f_blocks * (lstatfs.f_bsize / KB); 
