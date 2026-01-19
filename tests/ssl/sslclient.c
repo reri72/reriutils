@@ -78,6 +78,9 @@ int main(int argc, char **argv)
         int activity = select(client_fd + 1, &readfds, NULL, NULL, &timeout);
         if (activity < 0)
         {
+            // 시스템 신호에 의해 중단된 경우 다시 시도
+            if (errno == EINTR)
+                continue;
             perror("select error");
             break;
         }
