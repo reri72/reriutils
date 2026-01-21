@@ -40,7 +40,6 @@ int main(int argc, char **argv)
     signal(SIGINT, sig_handle);
     signal(SIGABRT, sig_handle);
     signal(SIGTERM, sig_handle);
-    signal(SIGKILL, sig_handle);
 
     bzero((char *)&icmpsend, sizeof(icmpsend));
 

@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
         return 0;
 
     signal(SIGTERM, sig_handle);
-    signal(SIGKILL, sig_handle);
     signal(SIGINT, sig_handle);
     signal(SIGILL, sig_handle);
 
